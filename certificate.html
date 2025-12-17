@@ -1,0 +1,134 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barangay Certificate Issuance</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">
+    <img src="file:///C:/Users/ADMIN/Downloads/589089441_1129256102360721_4780663126137488817_n.jpg" alt="Barangay Logo">
+    <div class="logo-text">
+      <h2>Barangay Lambing</h2>
+      <p>Management System</p>
+    </div>
+  </div>
+
+     <a href="home.html">Organizational Chart</a>
+     <a href="resident.html">Resident Information</a>
+    <a href="certificate.html">Barangay Certificate</a>
+    <a href="permit.html">Barangay Permit</a>
+    <a href="blotter.html">Blotter Records</a>
+   <button class="logout-btn" onclick="logout()">Logout</button>
+
+</div>
+<!-- =============================
+     SLIDESHOW IMAGES
+============================= -->
+<div class="slideshow">
+    <img src="file:///C:/Users/ADMIN/Downloads/597158155_869460002235397_1834324794221778936_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597319802_1554615692402307_655421837137661427_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597881480_1420134066365150_9219533480957788302_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597116340_2792048161142478_5963129178445261312_n.jpg" alt="">
+</div>
+<div class="main">
+  <section class="section">
+   
+
+    <div class="box">
+      <h2>Generate Certificate</h2>
+
+      <input type="text" id="residentName" placeholder="Resident Name" required>
+      <input type="text" id="purpose" placeholder="Purpose of Certificate" required>
+
+      <input type="text" id="controlNo" placeholder="Contact Number" required>
+      <select id="incident_type">
+        <option value="">-- Kind of Certificate (Select Option) --</option>
+        <option value="Peace & Order Concerns">Peace & Order Concerns</option>
+        <option value="Mediation / Legal Concerns">Mediation / Legal Concerns</option>
+        <option value="Health & Social Services Concerns">Health & Social Services Concerns</option>
+        <option value="Environmental Concerns">Environmental Concerns</option>
+        <option value="Infrastructure & Public Works">Infrastructure & Public Works</option>
+        <option value="Emergency">Emergency</option>
+        <option value="Community / Youth Concerns">Community / Youth Concerns</option>
+        <option value="Others">Others</option>
+      </select>
+
+      <button onclick="generateCertificate()">Submit Request</button>
+    </div>
+  </section>
+</div>
+
+<script>
+    // Helper function to get the current date in YYYY-MM-DD format
+    function getCurrentDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function generateCertificate() {
+        // 1. Get Form Values
+        const requesterName = document.getElementById('residentName').value.trim();
+        const purpose = document.getElementById('purpose').value.trim();
+        const controlNumber = document.getElementById('controlNo').value.trim();
+        const concernType = document.getElementById('incident_type').value || 'General'; // Use 'General' if not selected
+
+        // Basic validation
+        if (!requesterName || !purpose || !controlNumber) {
+            alert('Please fill in the Resident Name, Purpose, and Control Number.');
+            return;
+        }
+
+        // 2. Create the new record object
+        const newRecord = {
+            controlNumber: controlNumber,
+            requesterName: requesterName,
+            certType: 'Barangay Certificate', // Static for this page
+            purpose: purpose,
+            dateIssued: getCurrentDate(),
+            status: 'Issued'
+        };
+
+        // 3. Retrieve existing records from Local Storage
+        // The key used in certificated1.html is 'certificateReports'
+        const existingReports = localStorage.getItem('certificateReports');
+        let certificates = existingReports ? JSON.parse(existingReports) : [];
+
+        // 4. Add the new record
+        certificates.push(newRecord);
+
+        // 5. Save the updated list back to Local Storage
+        localStorage.setItem('certificateReports', JSON.stringify(certificates));
+
+        // 6. Provide user feedback and reset form
+        alert('Certificate record saved successfully! Control No: ' + controlNumber);
+        
+        // Optionally, reset the form after successful submission
+        document.getElementById('residentName').value = '';
+        document.getElementById('purpose').value = '';
+        document.getElementById('controlNo').value = '';
+        document.getElementById('incident_type').value = '';
+        
+        // OPTIONAL: Redirect to the records page to show the saved data
+        // window.location.href = 'certificated1.html';
+    }
+</script>
+<script>
+function logout() {
+  // Clear login data (if any)
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Redirect to login page
+  window.location.href = "login1.html";
+}
+</script>
+
+</body>
+</html>

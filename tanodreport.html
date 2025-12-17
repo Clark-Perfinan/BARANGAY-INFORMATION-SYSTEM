@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanod Incident Report - Barangay Management</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+    <style>
+         :root {
+            /* HD Background Color Scheme */
+            --bg-dark: #0f172a;      /* Very dark, near-black blue for max contrast */
+            --bg-panel: #1e293b;     /* Dark slate blue for panels (lifts off the background) */
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8;   /* Slightly darker muted text */
+            --accent: #ffc93c; 
+            --success: #1d9e75; 
+            --warning: #ef4444; 
+            --sidebar-width: 250px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            
+            /* HD Background Layers: Dark Gradient Overlay + High-Res Image */
+            background-image: 
+                linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), 
+                url('https://picsum.photos/1920/1080?random=1&blur=2'); 
+                
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* --- Sidebar & Main Content (Adjusted for Barangay feel) --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-panel);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            /* Lighter, subtle border-right */
+            border-right: 1px solid rgba(255,255,255,0.05);
+            position: fixed;
+            height: 100%;
+            transition: var(--transition);
+            z-index: 100;
+            /* Added deep shadow */
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5); 
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+        }
+        .logo span { color: white; } /* Barangay Hall icon */
+
+        .nav-links { list-style: none; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+        .nav-links a span { margin-left: 10px; }
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 201, 60, 0.15);
+            color: var(--accent);
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* --- Form/Box Styles (Similar to blotter.html) --- */
+        .box {
+            background: var(--bg-panel);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-top: 20px;
+            max-width: 700px;
+        }
+        .box h2 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: #1f375f; /* Darker input background */
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+        
+        /* Placeholder styling for dark theme */
+        ::placeholder {
+            color: var(--text-muted);
+            opacity: 1; 
+        }
+        option {
+            background-color: #1f375f;
+            color: var(--text-main);
+        }
+        
+        /* Submit Button */
+        button {
+            padding: 12px 25px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background: #0e9c6f; 
+        }
+             /* =============================
+   logout button
+============================= */
+.logout-btn {
+  margin: 20px;
+  padding: 12px;
+  width: calc(100% - 40px);
+  border: none;
+  background: #c0392b;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.logout-btn:hover {
+  background: #a93226;
+}
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <span class="material-icons-round">apartment</span>
+            <span>Brgy. Lambing</span>
+        </div>
+            <ul class="nav-links">
+            <li><a href="admin.html" class="#"><span class="material-icons-round">summarize</span><span>Dashboard</span></a></li>
+            <li><a href="resident1.html"><span class="material-icons-round">group</span><span>Residents List</span></a></li>
+            <li><a href="blotterRecords.html"><span class="material-icons-round">gavel</span><span>Katarungang PB</span></a></li>
+            <li><a href="#"><span class="material-icons-round">local_police</span><span>Tanod Reports</span></a></li>
+            <li><a href="Certificate-Records.html"><span class="material-icons-round">receipt_long</span><span>Certificates</span></a></li>
+         <button class="logout-btn" onclick="logout()">Logout</button>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1> Patrol Incident Report</h1>
+            <p>I-record ang lahat ng insidente at aktibidad habang naka-duty.</p>
+        </header>
+
+        <div class="box">
+            <h2>Submit Tanod Report</h2>
+            <input type="text" id="tanod_name" placeholder="Tanod on Duty (Pangalan)">
+            <input type="text" id="incident_location" placeholder="Location of Incident (Lugar)">
+            
+            <select id="report_type">
+                <option value="">-- Select Incident Type --</option>
+                <option value="Noise Complaint">Noise Complaint</option>
+                <option value="Curfew Violation">Curfew Violation</option>
+                <option value="Loitering/Vandalism">Loitering/Vandalism</option>
+                <option value="Traffic/Parking Issue">Traffic/Parking Issue</option>
+                <option value="Minor Disturbance">Minor Disturbance</option>
+                <option value="Fire/Medical Assistance">Fire/Medical Assistance</option>
+                <option value="Others">Others</option>
+            </select>
+            
+            <textarea id="report_details" placeholder="Incident Details / Narrative and Action Taken (Buong Detalye)" rows="5"></textarea> 
+
+            <input type="date" id="date">
+            <input type="time" id="time">
+            
+            <button onclick="addTanodReport()">Submit Report</button>
+        </div>
+
+        <script>
+            // Function to get the current Tanod reports from local storage
+            function getTanodReports() {
+                const reports = localStorage.getItem('tanodReports');
+                return reports ? JSON.parse(reports) : [];
+            }
+
+            // Function to save the updated Tanod reports to local storage
+            function saveTanodReports(reports) {
+                localStorage.setItem('tanodReports', JSON.stringify(reports));
+            }
+
+            function addTanodReport() {
+                // 1. Get values from the input fields
+                const tanodName = document.getElementById('tanod_name').value.trim();
+                const location = document.getElementById('incident_location').value.trim();
+                const reportType = document.getElementById('report_type').value.trim(); 
+                const reportDetails = document.getElementById('report_details').value.trim(); 
+                const date = document.getElementById('date').value.trim();
+                const time = document.getElementById('time').value.trim();
+                
+                // Simple validation (Required: Tanod Name, Location, Report Type, Date, Details)
+                if (!tanodName || !location || !reportType || !date || !reportDetails) {
+                    alert("Please fill in Tanod Name, Location, Incident Type, Date, and Report Details.");
+                    return;
+                }
+
+                // 2. Create a new record object
+                const newReport = {
+                    tanodName,
+                    location,
+                    reportType,
+                    reportDetails,
+                    date,
+                    time,
+                    status: 'Logged' // Default status for new Tanod reports
+                };
+
+                // 3. Get existing reports, add the new one, and save
+                const reports = getTanodReports();
+                reports.push(newReport);
+                saveTanodReports(reports);
+
+                alert("Tanod Report added successfully! Status: Logged.");
+
+                // 4. I-clear ang form pagkatapos mag-submit
+                document.getElementById('tanod_name').value = '';
+                document.getElementById('incident_location').value = '';
+                document.getElementById('report_type').value = '';
+                document.getElementById('report_details').value = ''; 
+                document.getElementById('date').value = '';
+                document.getElementById('time').value = '';
+            }
+        </script>
+        <script>
+function logout() {
+  // Clear login data (if any)
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Redirect to login page
+  window.location.href = "login1.html";
+}
+</script>
+    </main>
+</body>
+</html>

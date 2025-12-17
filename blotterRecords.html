@@ -1,0 +1,510 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Governance - Blotter Records List</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* --- Global Variables (Dashboard Style) --- */
+        :root {
+            /* HD Background Color Scheme */
+            --bg-dark: #0f172a; 
+            --bg-panel: #1e293b; 
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8; 
+            --accent: #ffc93c; 
+            --success: #1d9e75; 
+            --warning: #ef4444; 
+            --sidebar-width: 250px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            
+            /* HD Background Layers: Dark Gradient Overlay + High-Res Image */
+            background-image: 
+                linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), 
+                url('https://picsum.photos/1920/1080?random=1&blur=2'); 
+                
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* --- Sidebar & Main Content (Adjusted for Barangay feel) --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-panel);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            position: fixed;
+            height: 100%;
+            transition: var(--transition);
+            z-index: 100;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5); 
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+        }
+        .logo span { color: white; } /* Barangay Hall icon */
+
+        .nav-links { list-style: none; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+        .nav-links a span { margin-left: 10px; }
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 201, 60, 0.15);
+            color: var(--accent);
+        }
+        
+        /* --- Main Content (Blotter List Area) --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .main-content h2 { 
+            font-size: 2.2rem; 
+            color: var(--accent);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--text-muted);
+            padding-bottom: 10px;
+        }
+
+        /* --- Blotter Table Specific Styles --- */
+        .blotter-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+            background: var(--bg-panel);
+            border-radius: 12px;
+            overflow: hidden;
+            /* Enhanced shadow to pop out against the new background */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .blotter-table th, .blotter-table td { 
+            border: none; 
+            padding: 15px 10px; 
+            text-align: left; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        .blotter-table thead tr {
+            /* Variable --primary is not defined, using --bg-panel or another dark shade */
+            background-color: var(--bg-panel); 
+        }
+
+        .blotter-table th { 
+            color: var(--accent); 
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .blotter-table tbody tr:nth-child(even) { 
+            background-color: rgba(0, 0, 0, 0.1); 
+        }
+        .blotter-table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* View Button in Table */
+        .action-btn { 
+            padding: 8px 12px;
+            background-color: var(--accent); 
+            border: none; 
+            border-radius: 5px; 
+            color: var(--bg-dark); 
+            cursor: pointer; 
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .action-btn:hover {
+            background-color: #fbd345;
+        }
+
+        /* --- Modal (Pop-up) Styles --- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 200; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.6); 
+        }
+
+        .modal-content {
+            background-color: var(--bg-panel);
+            margin: 10% auto; 
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 80%;
+            max-width: 600px; 
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .modal-content h3 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .close {
+            color: var(--text-muted);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: var(--text-main);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #recordDetails .detail-item {
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dotted rgba(255,255,255,0.1);
+            line-height: 1.5;
+        }
+        #recordDetails .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        #modalActions {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: right;
+        }
+
+        #modalActions button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            margin-left: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #solve-btn {
+            background-color: var(--success);
+            color: white;
+        }
+        #reject-btn {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; width: 100%; }
+        }
+         /* =============================
+   logout button
+============================= */
+.logout-btn {
+  margin: 20px;
+  padding: 12px;
+  width: calc(100% - 40px);
+  border: none;
+  background: #c0392b;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.logout-btn:hover {
+  background: #a93226;
+}
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <span class="material-icons-round">apartment</span>
+            <span>Brgy. Lambing</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="admin.html"><span class="material-icons-round">summarize</span><span>Dashboard</span></a></li>
+            <li><a href="resident1.html"><span class="material-icons-round">group</span><span>Residents List</span></a></li>
+            <li><a href="#" class="active"><span class="material-icons-round">gavel</span><span>Katarungang PB</span></a></li>
+            <li><a href="tanodreport.html"><span class="material-icons-round">local_police</span><span>Tanod Reports</span></a></li>
+            <li><a href="Certificate-Records.html"><span class="material-icons-round">receipt_long</span><span>Certificates</span></a></li>
+           <button class="logout-btn" onclick="logout()">Logout</button>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <h2>Blotter Record List</h2>
+
+        <table class="blotter-table"> 
+            <thead>
+                <tr>
+                    <th>Complainant</th>
+                    <th>Respondent</th>
+                    <th>Victim</th>
+                    <th>Blotter / Incident</th>
+                    <th>Location of Respondent</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Blotter Record Details</h3>
+            <div id="recordDetails">
+                </div>
+            <div id="modalActions">
+                </div> 
+        </div>
+    </div>
+
+    <script>
+        // Variable to hold the actual records fetched from Local Storage
+        let currentRecords = [];
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadBlotterRecords();
+        });
+
+        // Helper function to fetch records from Local Storage
+        function getBlotters() {
+            // NOTE: Assumes the key used is 'blotterRecords'
+            const blotters = localStorage.getItem('blotterRecords');
+            return blotters ? JSON.parse(blotters) : [];
+        }
+
+        // Helper function to save records back to Local Storage
+        function saveBlotters(blotters) {
+            localStorage.setItem('blotterRecords', JSON.stringify(blotters));
+        }
+
+        function loadBlotterRecords() {
+            const tableBody = document.querySelector('.blotter-table tbody');
+            tableBody.innerHTML = ''; 
+
+            currentRecords = getBlotters();
+
+            currentRecords.forEach((record, index) => {
+                const row = tableBody.insertRow();
+                
+                row.insertCell().textContent = record.complainant;
+                row.insertCell().textContent = record.respondent;
+                row.insertCell().textContent = record.victim;
+                // Display the short incident type in the table
+                row.insertCell().textContent = record.incident; 
+                row.insertCell().textContent = record.location;
+                row.insertCell().textContent = record.date;
+                row.insertCell().textContent = record.time;
+                
+                // Style the status cell based on content
+                const statusCell = row.insertCell();
+                statusCell.textContent = record.status;
+                if (record.status === 'Resolved') {
+                    statusCell.style.color = 'var(--success)';
+                    statusCell.style.fontWeight = 'bold';
+                } else if (record.status === 'Rejected') {
+                    statusCell.style.color = 'var(--warning)';
+                    statusCell.style.fontWeight = 'bold';
+                }
+
+                const actionCell = row.insertCell();
+                // Pass the index for the viewDetails function
+                actionCell.innerHTML = `<button class="action-btn" onclick="viewDetails(${index})">View</button>`;
+            });
+            
+            if (currentRecords.length === 0) {
+                const row = tableBody.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 9; 
+                cell.textContent = "No blotter records found.";
+                cell.style.textAlign = 'center';
+                cell.style.fontStyle = 'italic';
+                cell.style.color = 'var(--text-muted)';
+            }
+        }
+
+        // --- Function to Handle Viewing Details ---
+        window.viewDetails = function(index) {
+            const record = currentRecords[index];
+            const detailsContainer = document.getElementById('recordDetails');
+            const actionsContainer = document.getElementById('modalActions');
+            
+            if (!record) {
+                detailsContainer.innerHTML = '<p style="color: var(--warning);">Error: Record not found.</p>';
+                actionsContainer.innerHTML = '';
+                openModal();
+                return;
+            }
+
+            // Check if there are Incident Details (the long comment/narrative)
+            const incidentDetailsHtml = record.incidentDetails ? 
+                `<div class="detail-item">
+                    <strong>Incident Details:</strong>
+                    <p style="white-space: pre-wrap; margin-top: 5px; margin-bottom: 0; padding: 10px; background: rgba(0,0,0,0.1); border-radius: 4px; color: var(--text-main);">
+                        ${record.incidentDetails}
+                    </p>
+                </div>` : 
+                `<div class="detail-item"><strong>Incident Details:</strong> <span style="color: var(--text-muted);">No detailed narrative provided.</span></div>`;
+
+
+            // 1. Format and display the record details
+            detailsContainer.innerHTML = `
+                <div class="detail-item"><strong>Complainant:</strong> ${record.complainant}</div>
+                <div class="detail-item"><strong>Respondent:</strong> ${record.respondent}</div>
+                <div class="detail-item"><strong>Victim:</strong> ${record.victim}</div>
+                <div class="detail-item"><strong>Concern Type:</strong> ${record.incident}</div>
+                
+                ${incidentDetailsHtml}
+
+                <div class="detail-item"><strong>Location:</strong> ${record.location}</div>
+                <div class="detail-item"><strong>Date:</strong> ${record.date}</div>
+                <div class="detail-item"><strong>Time:</strong> ${record.time}</div>
+                <div class="detail-item"><strong>Status:</strong> ${record.status}</div>
+            `;
+            
+            // 2. Add the action buttons (Resolve and Reject) only if the case is not yet Resolved or Rejected
+            if (record.status !== 'Resolved' && record.status !== 'Rejected') {
+                actionsContainer.innerHTML = `
+                    <button id="solve-btn" onclick="solveCase(${index})">Set Status: Resolved</button>
+                    <button id="reject-btn" onclick="rejectCase(${index})">Set Status: Rejected</button>
+                `;
+            } else if (record.status === 'Resolved') {
+                actionsContainer.innerHTML = `<p style="color: var(--success); font-weight: bold; margin: 0;">This case is already Resolved.</p>`;
+            } else if (record.status === 'Rejected') {
+                actionsContainer.innerHTML = `<p style="color: var(--warning); font-weight: bold; margin: 0;">This case has been Rejected.</p>`;
+            } else {
+                actionsContainer.innerHTML = ''; // Hide buttons for other statuses
+            }
+            
+            // 3. Display the modal pop-up
+            openModal();
+        }
+        
+        // --- Function to Resolve the Case ---
+        window.solveCase = function(index) {
+            if (!confirm("Are you sure you want to mark this case as 'Resolved'?")) {
+                return; 
+            }
+            
+            const recordToUpdate = currentRecords[index];
+            if (recordToUpdate) {
+                recordToUpdate.status = 'Resolved';
+                saveBlotters(currentRecords);
+
+                alert("Case status updated to 'Resolved'.");
+                
+                loadBlotterRecords();
+                closeModal();
+            } else {
+                alert("Error: Record not found for solving.");
+            }
+        }
+
+        // --- Function to Reject the Case ---
+        window.rejectCase = function(index) {
+            if (!confirm("Are you sure you want to mark this case as 'Rejected'?")) {
+                return; 
+            }
+
+            const recordToUpdate = currentRecords[index];
+            if (recordToUpdate) {
+                recordToUpdate.status = 'Rejected';
+                saveBlotters(currentRecords);
+
+                alert("Case status updated to 'Rejected'.");
+                
+                loadBlotterRecords();
+                closeModal();
+            } else {
+                alert("Error: Record not found for rejecting.");
+            }
+        }
+
+        // Functions to control the modal visibility
+        function openModal() {
+            document.getElementById('detailsModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        // Close the modal if the user clicks anywhere outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailsModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+    </script>
+     <script>
+function logout() {
+  // Clear login data (if any)
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Redirect to login page
+  window.location.href = "login1.html";
+}
+</script>
+</body>
+</html>

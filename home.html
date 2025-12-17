@@ -1,0 +1,119 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barangay Management System</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+  
+  </style>
+</head>
+
+<body>
+
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="logo">
+    <img src="file:///C:/Users/ADMIN/Downloads/589089441_1129256102360721_4780663126137488817_n.jpg" alt="Barangay Logo">
+    <div class="logo-text">
+      <h2>Barangay Lambing</h2>
+      <p>Management System</p>
+    </div>
+  </div>
+
+   <a href="home.html">Organizational Chart</a>
+     <a href="resident.html">Resident Information</a> 
+    <a href="certificate.html">Barangay Certificate</a>
+    <a href="permit.html">Barangay Permit</a>
+    <a href="blotter.html">Blotter Records</a>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+
+</div>
+<!-- =============================
+     SLIDESHOW IMAGES
+============================= -->
+<div class="slideshow">
+    <img src="file:///C:/Users/ADMIN/Downloads/597158155_869460002235397_1834324794221778936_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597319802_1554615692402307_655421837137661427_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597881480_1420134066365150_9219533480957788302_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597116340_2792048161142478_5963129178445261312_n.jpg" alt="">
+</div>
+ <div class="org-chart-container">
+  <div class="org-chart">
+    <h2>Barangay Officials</h2>
+
+    <!-- Level 1: Barangay Captain -->
+    <div class="level level-1">
+      <div class="member">
+        <img src="file:///C:/Users/ADMIN/Downloads/41e26fe1ed7248f16cc42311ad8fef28.jpg" alt="Barangay Captain">
+        <p>Ritz Charlie Barcoma </p>
+        <span>Barangay Captain</span>
+      </div>
+    </div>
+
+    <!-- Level 2: Councilors / Kagawad -->
+    <div class="level level-2">
+      <div class="member">
+        <img src="file:///C:/Users/ADMIN/Downloads/41e26fe1ed7248f16cc42311ad8fef28.jpg" alt="Kagawad">
+        <p>Kenneth Cabañero  </p>
+        <span>Kagawad</span>
+      </div>
+      <div class="member">
+        <img src="file:///C:/Users/ADMIN/Downloads/41e26fe1ed7248f16cc42311ad8fef28.jpg" alt="Kagawad">
+        <p> Jeauslern Cañones </p>
+        <span>Kagawad</span>
+      </div>
+      <div class="member">
+        <img src="file:///C:/Users/ADMIN/Downloads/41e26fe1ed7248f16cc42311ad8fef28.jpg" alt="Kagawad">
+        <p> Carlo Simangan </p>
+        <span>Kagawad</span>
+      </div>
+    </div>
+
+    <!-- Level 3: Secretary, Treasurer, Helpers, Workers -->
+    <div class="level level-3">
+      <div class="member">
+        <img src="file:///C:/Users/ADMIN/Downloads/41e26fe1ed7248f16cc42311ad8fef28.jpg" alt="Barangay Secretary">
+        <p> Angelle Kim Llanita</p>
+        <span>Secretary </span>
+      </div>
+      <div class="member">
+        <img src="file:///C:/Users/ADMIN/Downloads/41e26fe1ed7248f16cc42311ad8fef28.jpg" alt="Barangay Treasurer">
+        <p>Anthony Ocenar </p>
+        <span>Treasurer</span>
+      </div>
+      <div class="member">
+        <img src="file:///C:/Users/ADMIN/Downloads/41e26fe1ed7248f16cc42311ad8fef28.jpg" alt="Helper">
+        <p>Josiah Marco </p>
+        <span>Helper</span>
+      </div>
+      <div class="member">
+        <img src="file:///C:/Users/ADMIN/Downloads/41e26fe1ed7248f16cc42311ad8fef28.jpg" alt="SK Chairnman">
+        <p>  Juliebelle Cabangunay </p>
+        <span>SK Chairman</span>
+      </div>
+      <div class="member">
+        <img src="file:///C:/Users/ADMIN/Downloads/41e26fe1ed7248f16cc42311ad8fef28.jpg" alt="Tanod">
+        <p> Alfred Aban </p>
+        <span>Tanod</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function logout() {
+  // Clear login data (if any)
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Redirect to login page
+  window.location.href = "login1.html";
+}
+</script>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,479 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Governance Dashboard</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            /* HD Background Color Scheme */
+            --bg-dark: #0f172a; 
+            --bg-panel: #1e293b; 
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8; 
+            --accent: #ffc93c; 
+            --success: #1d9e75; 
+            --warning: #ef4444; 
+            --sidebar-width: 250px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            
+            /* HD Background Layers: Dark Gradient Overlay + High-Res Image */
+            background-image: 
+                linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), 
+                url('https://picsum.photos/1920/1080?random=1&blur=2'); 
+                
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* --- Sidebar & Main Content --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-panel);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            position: fixed;
+            height: 100%;
+            transition: var(--transition);
+            z-index: 100;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5); 
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+        }
+        .logo span { color: white; } 
+
+        .nav-links { list-style: none; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+        .nav-links a span { margin-left: 10px; }
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 201, 60, 0.15);
+            color: var(--accent);
+        }
+
+        /* Main content styling remains similar */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - var(--sidebar-width));
+        }
+        header h1 { font-size: 2.2rem; }
+        header p { color: var(--accent); font-weight: 600; }
+
+        /* --- KPI Grid for Barangay Metrics --- */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--bg-panel);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            border-left: 5px solid var(--accent);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .card-icon {
+            background: rgba(255, 201, 60, 0.1);
+            color: var(--accent);
+            padding: 10px;
+            border-radius: 50%;
+        }
+
+        .card h3 { font-size: 2.5rem; font-weight: 600; }
+        .card p { color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;}
+
+        /* --- Charts & Status Grid --- */
+        .analytics-grid {
+            grid-template-columns: 2fr 1fr; /* Demographics chart and Status box */
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: var(--bg-panel);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            height: 400px;
+            position: relative;
+        }
+
+        /* --- Incident/Case Feed --- */
+        .incident-card {
+            background: var(--bg-panel);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            overflow-y: auto;
+        }
+
+        .incident-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .incident-item:last-child { border-bottom: none; }
+
+        .incident-icon {
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        .incident-icon.major { color: var(--warning); background: rgba(239, 68, 68, 0.2); }
+        .incident-icon.minor { color: var(--accent); background: rgba(255, 201, 60, 0.2); }
+        .incident-icon.kp { color: var(--success); background: rgba(29, 158, 117, 0.2); }
+
+        .incident-details strong { font-weight: 600; display: block; }
+        .incident-details span { color: var(--text-muted); font-size: 0.8rem; }
+        .incident-details .time { float: right; color: var(--text-muted); }
+
+        /* Table styles to match the dark theme */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        thead tr {
+            background-color: rgba(255,255,255,0.05);
+        }
+        tbody tr:hover {
+            background-color: rgba(255,255,255,0.02);
+        }
+        .status {
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 968px) {
+            .analytics-grid { grid-template-columns: 1fr; }
+            .incident-card { height: auto; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; width: 100%; }
+        }
+         /* =============================
+   logout button
+============================= */
+.logout-btn {
+  margin: 20px;
+  padding: 12px;
+  width: calc(100% - 40px);
+  border: none;
+  background: #c0392b;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.logout-btn:hover {
+  background: #a93226;
+}
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <span class="material-icons-round">apartment</span>
+            <span>Brgy.
+                Lambing</span>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="admin.html" class="#"><span class="material-icons-round">summarize</span><span>Dashboard</span></a></li>
+            <li><a href="resident1.html"><span class="material-icons-round">group</span><span>Residents List</span></a></li>
+            <li><a href="blotterRecords.html"><span class="material-icons-round">gavel</span><span>Katarungang PB</span></a></li>
+            <li><a href="tanodreport.html"><span class="material-icons-round">local_police</span><span>Tanod Reports</span></a></li>
+            <li><a href="Certificate-Records.html"><span class="material-icons-round">receipt_long</span><span>Certificates</span></a></li>
+             <button class="logout-btn" onclick="logout()">Logout</button>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1>Dashboard ng Pamayanan</h1>
+            <p>Brgy.Lambing, Lungsod ng Iniwan, Pilipinas</p>
+        </header>
+
+        <div class="kpi-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><span class="material-icons-round">people</span></div>
+                </div>
+                <h3 id="totalPopulation">0</h3>
+                <p>Total Populasyon</p>
+            </div>
+
+            <div class="card" style="border-left: 5px solid var(--success);">
+                <div class="card-header">
+                    <div class="card-icon" style="color: var(--success); background: rgba(29, 158, 117, 0.2);"><span class="material-icons-round">security</span></div>
+                </div>
+                <h3>03</h3>
+                <p>Active Incidents (Last 7 Days)</p>
+            </div>
+
+            <div class="card" style="border-left: 5px solid var(--warning);">
+                <div class="card-header">
+                    <div class="card-icon" style="color: var(--warning); background: rgba(239, 68, 68, 0.2);"><span class="material-icons-round">gavel</span></div>
+                </div>
+                <h3 id="pendingKpCount">0</h3> 
+                <p>Pending KP Cases</p>
+            </div>
+
+            <div class="card" style="border-left: 5px solid #8b5cf6;">
+                <div class="card-header">
+                    <div class="card-icon" style="color: #8b5cf6; background: rgba(139, 92, 246, 0.2);"><span class="material-icons-round">elderly</span></div>
+                </div>
+                <h3 id="seniorCount">0</h3>
+                <p>Senior Citizens Count</p>
+            </div>
+        </div>
+
+        <div class="analytics-grid">
+            <div class="chart-card">
+                <canvas id="demographicsChart"></canvas>
+            </div>
+            
+            <div class="incident-card">
+                <h2 style="margin-bottom: 20px;">Recent Activity & Reports</h2>
+                <div class="incident-list">
+                    <div class="incident-item">
+                        <div class="incident-icon major"><span class="material-icons-round">dangerous</span></div>
+                        <div class="incident-details">
+                            <strong>Theft Report (Major)</strong>
+                            <span class="time">15 mins ago</span>
+                            <span>A motorcycle was reported stolen near Zone 5.</span>
+                        </div>
+                    </div>
+                    <div class="incident-item">
+                        <div class="incident-icon kp"><span class="material-icons-round">record_voice_over</span></div>
+                        <div class="incident-details">
+                            <strong>KP Case Filed (Settlement)</strong>
+                            <span class="time">2 hours ago</span>
+                            <span>Boundary dispute between two neighbors.</span>
+                        </div>
+                    </div>
+                    <div class="incident-item">
+                        <div class="incident-icon minor"><span class="material-icons-round">volume_up</span></div>
+                        <div class="incident-details">
+                            <strong>Noise Complaint (Minor)</strong>
+                            <span class="time">Yesterday</span>
+                            <span>Loud karaoke past 10 PM. Tanod dispatched.</span>
+                        </div>
+                    </div>
+                    <div class="incident-item">
+                        <div class="incident-icon kp"><span class="material-icons-round">gavel</span></div>
+                        <div class="incident-details">
+                            <strong>KP Case Mediation (Pending)</strong>
+                            <span class="time">Oct 24, 2025</span>
+                            <span>Case for slight physical injuries scheduled.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="incident-card" style="grid-column: span 2;">
+            <h2 style="margin-bottom: 10px;">Katarungang Pambarangay (KP) Summary</h2>
+            <table>
+                <thead>
+                    <tr style="color: var(--accent);">
+                        <th>Case No.</th>
+                        <th>Nature of Dispute</th>
+                        <th>Date Filed</th>
+                        <th>Status</th>
+                        <th>Settlement Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>KP-2025-015</td>
+                        <td>Slight Physical Injuries</td>
+                        <td>Dec 10, 2025</td>
+                        <td><span class="status" style="color: var(--warning); background: rgba(239, 68, 68, 0.1);">Pending Hearing</span></td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>KP-2025-014</td>
+                        <td>Boundary Dispute</td>
+                        <td>Nov 28, 2025</td>
+                        <td><span class="status" style="color: var(--success); background: rgba(29, 158, 117, 0.1);">Amicably Settled</span></td>
+                        <td>Arbitration</td>
+                    </tr>
+                    <tr>
+                        <td>KP-2025-013</td>
+                        <td>Theft (less than P500)</td>
+                        <td>Nov 15, 2025</td>
+                        <td><span class="status" style="color: #8b5cf6; background: rgba(139, 92, 246, 0.1);">Refer to Court</span></td>
+                        <td>—</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        // Function to load all residents from local storage
+        function loadResidents() {
+            return JSON.parse(localStorage.getItem('residents')) || [];
+        }
+
+        // NEW: Function to load blotter records
+        function getBlotters() {
+            return JSON.parse(localStorage.getItem('blotterRecords')) || [];
+        }
+
+        function updateDashboardMetrics() {
+            const residents = loadResidents();
+            const totalPopulation = residents.length;
+
+            // --- Calculate Metrics ---
+            let maleCount = 0;
+            let femaleCount = 0;
+            let childCount = 0;
+            let adultCount = 0;
+            let seniorCount = 0;
+
+            residents.forEach(res => {
+                // Ensure field names match your resident.html (e.g., res.gender, res.age)
+                const gender = res.gender ? res.gender.toLowerCase().trim() : '';
+                const age = parseInt(res.age);
+
+                if (gender === 'male') maleCount++;
+                else if (gender === 'female') femaleCount++;
+
+                if (!isNaN(age)) {
+                    if (age < 18) childCount++;
+                    else if (age >= 18 && age < 60) adultCount++;
+                    else if (age >= 60) seniorCount++;
+                }
+            });
+
+            // Pending KP cases
+            const blotterRecords = getBlotters();
+            const pendingKpCount = blotterRecords.filter(record => 
+                record.status !== 'Resolved' && record.status !== 'Rejected'
+            ).length;
+
+            // --- Update KPI Cards ---
+            document.getElementById("totalPopulation").textContent = totalPopulation.toLocaleString();
+            document.getElementById("seniorCount").textContent = seniorCount.toLocaleString();
+            document.getElementById("pendingKpCount").textContent = pendingKpCount.toLocaleString();
+
+            // --- Update Demographics Chart ---
+            const ctxDemo = document.getElementById('demographicsChart').getContext('2d');
+            if (window.demographicsChartInstance) window.demographicsChartInstance.destroy();
+
+            const populationForChart = totalPopulation > 0 ? totalPopulation : 1;
+            const chartData = [maleCount, femaleCount, childCount, adultCount, seniorCount];
+            const chartLabels = [
+                `Male (${((maleCount / populationForChart) * 100).toFixed(1)}%)`,
+                `Female (${((femaleCount / populationForChart) * 100).toFixed(1)}%)`,
+                `Child (${((childCount / populationForChart) * 100).toFixed(1)}%)`,
+                `Adult (${((adultCount / populationForChart) * 100).toFixed(1)}%)`,
+                `Senior (${((seniorCount / populationForChart) * 100).toFixed(1)}%)`
+            ];
+
+            window.demographicsChartInstance = new Chart(ctxDemo, {
+                type: 'pie',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        data: chartData,
+                        backgroundColor: ['#3b82f6', '#ef4444', '#facc15', '#22c55e', '#8b5cf6'], // Blue, Red, Yellow, Green, Purple
+                        borderWidth: 1.9,
+                        borderColor: 'black',
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#fff' } },
+                        title: { display: true, text: 'Population by Gender & Age Group', color: '#fff', align: 'start', font: {size: 16} }
+                    }
+                }
+            });
+        }
+
+        // Run the update function when the page loads
+        document.addEventListener('DOMContentLoaded', updateDashboardMetrics);
+    </script>
+    <script>
+function logout() {
+  // Clear login data (if any)
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Redirect to login page
+  window.location.href = "login1.html";
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resident Permit Records</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo">
+      <img src="file:///C:/Users/ADMIN/Downloads/589089441_1129256102360721_4780663126137488817_n.jpg" alt="Barangay Logo">
+      <div class="logo-text">
+        <h2>Barangay Lambing</h2>
+        <p>Management System</p>
+      </div>
+    </div>
+    <nav>
+      <a href="home.html">Organizational Chart</a>
+      <a href="resident.html">Resident Information</a>
+      <a href="certificate.html">Barangay Certificate</a>
+      <a href="permit.html">Barangay Permit</a>
+      <a href="blotter.html">Blotter Records</a>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+
+    </nav>
+  </div>
+
+  <div class="main">
+    <div class="slideshow">
+   <img src="file:///C:/Users/ADMIN/Downloads/597158155_869460002235397_1834324794221778936_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597319802_1554615692402307_655421837137661427_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597881480_1420134066365150_9219533480957788302_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597116340_2792048161142478_5963129178445261312_n.jpg" alt="">
+    </div>
+
+    <section class="section">
+      <div class="box">
+        <h1> Barangay Permit </h1>
+      <input type="text" id="residentName" placeholder="Resident Name">
+        <input type="text" id="permitType" placeholder="Type of Permit">
+        <input type="text" id="contactNumber" placeholder="Contact Number">
+        <button onclick="addPermit()">Add Permit</button>
+      </div>
+
+      <div class="table-container">
+        <table id="permitTable">
+          <thead>
+            <tr>
+          <th>Resident Name</th>
+          <th>Type of Permit</th>
+          <th>Contact Number</th>
+          <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const permits = [];
+
+    function addPermit() {
+      // Use standard IDs without spaces
+      const name = document.getElementById('residentName').value;
+      const type = document.getElementById('permitType').value;
+      const contact = document.getElementById('contactNumber').value;
+
+      // Validation
+      if (!name || !type || !contact) {
+        return alert("Please fill all fields.");
+      }
+
+      // Add to array
+      permits.push({ name, type, contact });
+      
+      renderPermits();
+      clearForm();
+    }
+
+    function renderPermits() {
+      const tbody = document.querySelector('#permitTable tbody');
+      tbody.innerHTML = '';
+
+      permits.forEach((p, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${p.name}</td>
+            <td>${p.type}</td>
+            <td>${p.contact}</td>
+            <td><button class="delete-btn" onclick="deletePermit(${i})">Delete</button></td>
+          </tr>
+        `;
+      });
+    }
+
+    function deletePermit(index) {
+      if(confirm("Are you sure you want to delete this record?")) {
+        permits.splice(index, 1);
+        renderPermits();
+      }
+    }
+
+    function clearForm() {
+      document.getElementById('residentName').value = '';
+      document.getElementById('permitType').value = '';
+      document.getElementById('contactNumber').value = '';
+    }
+  </script>
+<script>
+function logout() {
+  // Clear login data (if any)
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Redirect to login page
+  window.location.href = "login1.html";
+}
+</script>
+
+</body>
+</html>

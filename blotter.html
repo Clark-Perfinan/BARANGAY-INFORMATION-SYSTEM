@@ -1,0 +1,149 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blotter Records - Barangay Management</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="sidebar">
+  <div class="logo">
+    <img src="file:///C:/Users/ADMIN/Downloads/589089441_1129256102360721_4780663126137488817_n.jpg" alt="Barangay Logo">
+    <div class="logo-text">
+      <h2>Barangay Lambing</h2>
+      <p>Management System</p>
+    </div>
+  </div>
+
+   <a href="home.html">Organizational Chart</a>
+    <a href="resident.html">Resident Information</a>
+    <a href="certificate.html">Barangay Certificate</a>
+    <a href="permit.html">Barangay Permit</a>
+    <a href="blotter.html">Blotter Records</a>
+     <button class="logout-btn" onclick="logout()">Logout</button>
+
+  </div>
+<!-- =============================
+     SLIDESHOW IMAGES
+============================= -->
+<div class="slideshow">
+    <img src="file:///C:/Users/ADMIN/Downloads/597158155_869460002235397_1834324794221778936_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597319802_1554615692402307_655421837137661427_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597881480_1420134066365150_9219533480957788302_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597116340_2792048161142478_5963129178445261312_n.jpg" alt="">
+</div>
+  <div class="main">
+    <section class="section">
+      
+
+      <div class="box">
+     <h1>Blotter / Incident Records</h1>
+    <input type="text" id="complainant" placeholder="Complainant">
+    <input type="text" id="respondent" placeholder="Respondent">
+    <input type="text" id="victim" placeholder="Victim">
+    
+    <select id="incident_type">
+      <option value="">-- Select Concern Type (Optional) --</option>
+      <option value="Peace & Order Concerns">Peace & Order Concerns</option>
+      <option value="Mediation / Legal Concerns">Mediation / Legal Concerns</option>
+      <option value="Health & Social Services Concerns">Health & Social Services Concerns</option>
+      <option value="Environmental Concerns">Environmental Concerns</option>
+      <option value="Infrastructure & Public Works">Infrastructure & Public Works Disturbance</option>
+        <option value="Community / Youth Concerns">Community / Youth Concerns</option>
+      <option value="Others">Others</option>
+    </select>
+      
+    
+    <textarea id="incident_details" placeholder="Incident Details / Narrative (Long Comment, Optional)" rows="4"></textarea> 
+
+    <input type="text" id="location" placeholder="Location of Respondent">
+    <input type="date" id="date">
+    <input type="time" id="time">
+  
+    <button onclick="addBlotter()">Submit</button>
+</div>
+
+   <script>
+    // Function to get the current blotter records from local storage
+    function getBlotters() {
+        const blotters = localStorage.getItem('blotterRecords');
+        return blotters ? JSON.parse(blotters) : [];
+    }
+
+    // Function to save the updated blotter records to local storage
+    function saveBlotters(blotters) {
+        localStorage.setItem('blotterRecords', JSON.stringify(blotters));
+    }
+
+    function addBlotter() {
+        // 1. Get values from the input fields
+        const complainant = document.getElementById('complainant').value.trim();
+        const respondent = document.getElementById('respondent').value.trim();
+        const victim = document.getElementById('victim').value.trim();
+        
+        // Kinuha ang IDs
+        const incidentType = document.getElementById('incident_type').value.trim(); 
+        const incidentDetails = document.getElementById('incident_details').value; 
+        
+        const location = document.getElementById('location').value.trim();
+        const date = document.getElementById('date').value.trim();
+        const time = document.getElementById('time').value.trim();
+        // TINANGGAL ANG PAG-KUHA NG STATUS VALUE: const status = document.getElementById('status').value.trim(); 
+
+        // Simple validation (Only Complainant and Date are required)
+        if (!complainant || !date) {
+            alert("Please fill in Complainant and Date. All other fields are optional.");
+            return;
+        }
+
+        // 2. Create a new record object
+        const newRecord = {
+            complainant,
+            respondent: respondent || 'N/A', 
+            victim: victim || 'N/A',
+            // OPTIONAL FIELDS
+            incident: incidentType || 'Not Specified', // Incident Type is optional
+            incidentDetails: incidentDetails,        // Long comment is optional
+            
+            location: location || 'N/A',
+            date,
+            time,
+            status: 'Pending' // MANUAL STATUS: Lahat ng bagong record ay 'Pending' na ngayon
+        };
+
+        // 3. Get existing records, add the new one, and save
+        const blotters = getBlotters();
+        blotters.push(newRecord);
+        saveBlotters(blotters);
+
+        alert("Record added successfully! Status set to 'Pending'.");
+
+        // 4. I-clear ang form pagkatapos mag-submit
+        document.getElementById('complainant').value = '';
+        document.getElementById('respondent').value = '';
+        document.getElementById('victim').value = '';
+        document.getElementById('incident_type').value = '';
+        document.getElementById('incident_details').value = ''; 
+        document.getElementById('location').value = '';
+        document.getElementById('date').value = '';
+        document.getElementById('time').value = '';
+    }
+</script>
+       <script>
+function logout() {
+  // Clear login data (if any)
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Redirect to login page
+  window.location.href = "login1.html";
+}
+</script>
+
+
+    
+
+</body>
+</html> 

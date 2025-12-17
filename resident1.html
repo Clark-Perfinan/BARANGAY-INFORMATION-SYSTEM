@@ -1,0 +1,298 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Management System - Residents List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <style>
+        /* --- Global Variables (Dashboard Style) --- */
+        :root {
+            /* HD Background Color Scheme */
+            --bg-dark: #0f172a;      /* Very dark, near-black blue for max contrast */
+            --bg-panel: #1e293b;     /* Dark slate blue for panels (lifts off the background) */
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8;   /* Slightly darker muted text */
+            --accent: #ffc93c; 
+            --success: #1d9e75; 
+            --warning: #ef4444; 
+            --sidebar-width: 250px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            
+            /* HD Background Layers: Dark Gradient Overlay + High-Res Image */
+            background-image: 
+                linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), 
+                url('https://picsum.photos/1920/1080?random=1&blur=2'); 
+                
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* --- Sidebar & Main Content (Adjusted for Barangay feel) --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-panel);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            /* Lighter, subtle border-right */
+            border-right: 1px solid rgba(255,255,255,0.05);
+            position: fixed;
+            height: 100%;
+            transition: var(--transition);
+            z-index: 100;
+            /* Added deep shadow */
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5); 
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+        }
+        .logo span { color: white; } /* Barangay Hall icon */
+
+        .nav-links { list-style: none; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+        .nav-links a span { margin-left: 10px; }
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 201, 60, 0.15);
+            color: var(--accent);
+        }
+
+        /* --- Main Content Style (Adjusted for Sidebar) --- */
+        .main { 
+            margin-left: var(--sidebar-width); /* Push content away from fixed sidebar */
+            flex: 1; /* Allow main content to take remaining space */
+            padding: 30px; /* Add padding for overall main area */
+            width: calc(100% - var(--sidebar-width)); /* Ensure it fits */
+        }
+        
+        h1 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 2.2rem; /* Adjusted for main page heading */
+            border-bottom: 2px solid var(--text-muted);
+            padding-bottom: 10px;
+        }
+
+        /* --- Resident List Table Styling --- */
+        .resident-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+            background: var(--bg-panel); /* Panel background for the table */
+            border-radius: 12px;
+            overflow: hidden;
+            /* Enhanced shadow to pop out against the new background */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); 
+        }
+        
+        /* Remove default light border, use panel background */
+        .resident-table th, .resident-table td { 
+            border: none; 
+            padding: 15px 10px; 
+            text-align: left; 
+        }
+        
+        /* Table Header Style */
+        .resident-table thead tr {
+            background-color: var(--primary); /* Deep blue header */
+        }
+        .resident-table th { 
+            color: var(--accent); /* Yellow text for emphasis */
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        
+        /* Alternating row color */
+        .resident-table tbody tr:nth-child(even) { 
+            background-color: rgba(0, 0, 0, 0.1); 
+        }
+        .resident-table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Table body cell separation */
+        .resident-table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        .action-btn { 
+            padding: 8px 12px; /* Increased padding for better touch targets */
+            border: none; 
+            border-radius: 5px; 
+            color: var(--text-main); /* White text */
+            cursor: pointer; 
+            margin-right: 5px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .delete-btn { 
+            background-color: var(--warning); /* Red for delete */
+        }
+        .delete-btn:hover {
+            background-color: #c53030; /* Darker red on hover */
+        }
+
+        /* Center text for empty table */
+        .resident-table td[colspan="9"] {
+            text-align:center;
+            color: var(--text-muted) !important;
+            font-style: italic;
+        }
+         /* =============================
+   logout button
+============================= */
+.logout-btn {
+  margin: 20px;
+  padding: 12px;
+  width: calc(100% - 40px);
+  border: none;
+  background: #c0392b;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.logout-btn:hover {
+  background: #a93226;
+}
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <span class="material-icons-round">apartment</span>
+            <span>Brgy. Lambing</span>
+        </div>
+          <ul class="nav-links">
+            <li><a href="admin.html" class="#"><span class="material-icons-round">summarize</span><span>Dashboard</span></a></li>
+            <li><a href="#"><span class="material-icons-round">group</span><span>Residents List</span></a></li>
+            <li><a href="blotterRecords.html"><span class="material-icons-round">gavel</span><span>Katarungang PB</span></a></li>
+            <li><a href="tanodreport.html"><span class="material-icons-round">local_police</span><span>Tanod Reports</span></a></li>
+            <li><a href="Certificate-Records.html"><span class="material-icons-round">receipt_long</span><span>Certificates</span></a></li>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </ul>
+    </aside>
+
+    <div class="main">
+        <h1> (Resident List) </h1>
+
+        <table class="resident-table" id="residentTable">
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Alias</th>
+                    <th>Age</th>
+                    <th>Status</th>
+                    <th>Gender</th>
+                    <th>Purok</th>
+                    <th>Voter</th>
+                    <th>Civil Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+    
+
+    <script>
+        const tableBody = document.querySelector('#residentTable tbody');
+
+        // NOTE: For this to work, the registration page must use the same key 'residents'
+        function loadResidents() {
+            // Key used by the original file
+            return JSON.parse(localStorage.getItem('residents')) || []; 
+        }
+
+        function saveResidents(data) {
+            localStorage.setItem('residents', JSON.stringify(data));
+        }
+
+        function renderTable() {
+            const residents = loadResidents();
+            tableBody.innerHTML = '';
+            
+            if(residents.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="9">No residents found.</td></tr>';
+                return;
+            }
+
+            residents.forEach((res, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${res.fullname}</td>
+                    <td>${res.alias || 'N/A'}</td> <td>${res.age || 'N/A'}</td>
+                    <td>${res.status || 'N/A'}</td>
+                    <td>${res.gender || 'N/A'}</td>
+                    <td>${res.purok || 'N/A'}</td>
+                    <td>${res.voter || 'No'}</td> <td>${res.civil || 'N/A'}</td>
+                    <td>
+                        <button class="action-btn delete-btn" onclick="deleteResident(${index})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Delete Resident (Global function)
+        window.deleteResident = function(index) {
+            if (confirm('Are you sure you want to delete this resident?')) {
+                const residents = loadResidents();
+                residents.splice(index, 1);
+                saveResidents(residents);
+                renderTable();
+            }
+        }
+
+        // Initial render pagkabukas ng page
+        document.addEventListener('DOMContentLoaded', renderTable);
+    </script>
+    <script>
+function logout() {
+  // Clear login data (if any)
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Redirect to login page
+  window.location.href = "login1.html";
+}
+</script>
+</body>
+</html>

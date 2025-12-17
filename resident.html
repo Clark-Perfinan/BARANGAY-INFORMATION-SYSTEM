@@ -1,0 +1,133 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barangay Management System - Residents</title>
+  <link rel="stylesheet" href="style.css"> 
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+</head>
+<body>
+  
+
+   <div class="sidebar">
+  <div class="logo">
+    <img src="file:///C:/Users/ADMIN/Downloads/589089441_1129256102360721_4780663126137488817_n.jpg" alt="Barangay Logo">
+    <div class="logo-text">
+      <h2>Barangay Lambing</h2>
+      <p>Management System</p>
+    </div>
+  </div>
+
+
+    <a href="home.html">Organizational Chart</a>
+    <a href="resident.html">Resident Information</a>
+    <a href="certificate.html">Barangay Certificate</a>
+    <a href="permit.html">Barangay Permit</a>
+    <a href="blotter.html">Blotter Records</a>
+   <button class="logout-btn" onclick="logout()">Logout</button>
+
+  </div>
+<!-- =============================
+     SLIDESHOW IMAGES
+============================= -->
+<div class="slideshow">
+    <img src="file:///C:/Users/ADMIN/Downloads/597158155_869460002235397_1834324794221778936_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597319802_1554615692402307_655421837137661427_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597881480_1420134066365150_9219533480957788302_n.jpg" alt="">
+    <img src="file:///C:/Users/ADMIN/Downloads/597116340_2792048161142478_5963129178445261312_n.jpg" alt="">
+</div>
+  <div class="main">
+    <section id="residents" class="section">
+      
+
+      <div class="box">
+        <h2>Add Resident</h2>
+        <input type="text" id="fullname" placeholder="Full Name" required>
+        <input type="text" id="alias" placeholder="Alias">
+        <input type="number" id="age" placeholder="Age" required>
+        <input type="text" id="status" placeholder="Status (Resident/Visitor)" required>
+        <input type="text" id="gender" placeholder="Gender" required>
+        <input type="text" id="purok" placeholder="Purok" required>
+        <input type="text" id="voter" placeholder="Voter Status (Yes/No)" required>
+        <input type="text" id="civil" placeholder="Civil Status" required>
+        <button onclick="addResident()">Add Resident</button>
+        <p id="message" style="margin-top: 15px; font-weight: bold;"></p>
+      </div>
+    </section>
+  </div>
+
+
+  <script>
+    // Functions to load and save data from Local Storage (must match the key in resident1.html)
+    function loadResidents() {
+        return JSON.parse(localStorage.getItem('residents')) || [];
+    }
+
+    function saveResidents(data) {
+        localStorage.setItem('residents', JSON.stringify(data));
+    }
+
+    function addResident() {
+        // 1. Get values from form inputs
+        const resident = {
+            fullname: document.getElementById('fullname').value.trim(),
+            alias: document.getElementById('alias').value.trim(),
+            age: document.getElementById('age').value.trim(),
+            status: document.getElementById('status').value.trim(),
+            gender: document.getElementById('gender').value.trim(),
+            purok: document.getElementById('purok').value.trim(),
+            voter: document.getElementById('voter').value.trim(),
+            civil: document.getElementById('civil').value.trim()
+        };
+
+        const message = document.getElementById('message');
+
+        // 2. Simple validation check (e.g., Full Name is required)
+        if (!resident.fullname || !resident.age || !resident.status || !resident.gender || !resident.purok || !resident.voter || !resident.civil) {
+            message.textContent = 'Please fill in all required fields (marked with required in the code).';
+            message.style.color = '#e74c3c'; // Red
+            return;
+        }
+
+        // 3. Load existing residents
+        const residents = loadResidents();
+
+        // 4. Add new resident
+        residents.push(resident);
+
+        // 5. Save the updated list back to Local Storage
+        saveResidents(residents);
+
+        // 6. Provide feedback and clear form
+        message.textContent = `Resident ${resident.fullname} added successfully!`;
+        message.style.color = '#2ecc71'; // Green
+        
+        // Clear inputs after successful submission
+        document.getElementById('fullname').value = '';
+        document.getElementById('alias').value = '';
+        document.getElementById('age').value = '';
+        document.getElementById('status').value = '';
+        document.getElementById('gender').value = '';
+        document.getElementById('purok').value = '';
+        document.getElementById('voter').value = '';
+        document.getElementById('civil').value = '';
+
+        // Optional: Redirect or prompt the user to view the list
+        console.log("New resident saved to Local Storage.");
+    }
+  </script>
+<script>
+function logout() {
+  // Clear login data (if any)
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Redirect to login page
+  window.location.href = "login1.html";
+}
+</script>
+
+</body>
+</html>
